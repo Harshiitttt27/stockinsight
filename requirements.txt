@@ -1,0 +1,13 @@
+Django>=5.0
+djangorestframework
+djangorestframework-simplejwt
+yfinance
+numpy
+pandas
+tensorflow
+matplotlib
+python-decouple
+django-environ
+gunicorn
+whitenoise
+django-tailwind
