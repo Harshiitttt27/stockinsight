@@ -1,0 +1,23 @@
+# Ignore virtual environment
+env/
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Ignore system files
+.DS_Store
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore compiled/static/media files
+/media/
+/staticfiles/
+
+# Ignore model files
+*.keras
+
+# Ignore env files
+.env
