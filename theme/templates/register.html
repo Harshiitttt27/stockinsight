@@ -1,0 +1,135 @@
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% tailwind_css %}
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <!-- Main Card Container -->
+    <div class="w-full max-w-md bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+        <!-- Gradient Header with Icon -->
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-center border-b border-blue-400/30">
+            <div class="mx-auto w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border-2 border-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <h1 class="mt-4 text-2xl font-bold text-white">Create Account</h1>
+            <p class="text-blue-100 mt-1">Start your journey with Stock Insight</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="p-8 bg-white/90 backdrop-blur-sm">
+            <form id="register-form" class="space-y-5">
+                <!-- Username Field -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="text" id="username" name="username" 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50/50"
+                               placeholder="username" required>
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="password" id="password" name="password" 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50/50"
+                               placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <!-- Register Button -->
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md">
+                    Register Now
+                </button>
+
+                <!-- Status Message -->
+                <p id="register-message" class="text-center text-sm h-5 mt-2"></p>
+
+                <!-- Login Link -->
+                <div class="text-center pt-4 border-t border-gray-100">
+                    <p class="text-sm text-gray-600">
+                        Already have an account? 
+                        <a href="/login/" class="text-blue-600 font-medium hover:underline">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function getCSRFToken() {
+        let cookieValue = null;
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
+                break;
+            }
+        }
+        return cookieValue;
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = this.username.value;
+        const password = this.password.value;
+        const csrftoken = getCSRFToken();
+
+        const msgEl = document.getElementById('register-message');
+        msgEl.textContent = "Creating account...";
+        msgEl.className = "text-center text-sm h-5 mt-2 text-gray-600";
+
+        try {
+            const res = await fetch('/api/v1/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({username, password})
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+
+                msgEl.textContent = "🎉 Registration successful! Redirecting...";
+                msgEl.className = "text-center text-sm h-5 mt-2 text-green-600";
+                
+                setTimeout(() => {
+                    window.location.href = "/login/";
+                }, 1500);
+            } else {
+                const data = await res.json();
+                msgEl.textContent = data.username?.[0] || data.password?.[0] || "Registration failed";
+                msgEl.className = "text-center text-sm h-5 mt-2 text-red-600";
+            }
+        } catch (error) {
+            msgEl.textContent = "Network error. Please try again.";
+            msgEl.className = "text-center text-sm h-5 mt-2 text-red-600";
+        }
+    });
+    </script>
+</body>
+</html>

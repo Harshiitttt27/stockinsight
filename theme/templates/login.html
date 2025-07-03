@@ -1,0 +1,114 @@
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% tailwind_css %}
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+
+  <div class="relative w-full max-w-md bg-white rounded-xl p-8 shadow-lg">
+    <!-- Title -->
+    <h1 class="text-2xl font-bold text-center text-gray-900 mb-8">Login</h1>
+
+    <form id="login-form" class="space-y-6">
+      <!-- Username Field -->
+      <div>
+        <label for="username" class="text-sm font-medium text-gray-700 block mb-1">Username</label>
+        <input type="text" id="username" name="username" required placeholder="Enter your username"
+          class="w-full border-b border-gray-300 focus:outline-none focus:border-black py-2 bg-transparent" />
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="text-sm font-medium text-gray-700 block mb-1">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter your password"
+          class="w-full border-b border-gray-300 focus:outline-none focus:border-black py-2 bg-transparent" />
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">
+        Login
+      </button>
+
+      <!-- Error/Success Message -->
+      <p id="login-message" class="text-center text-sm h-5 mt-2 text-red-500"></p>
+
+      <!-- Forgot Password -->
+      <div class="text-center">
+        <a href="/forgot-password/" class="text-sm text-gray-600 hover:underline">Forgot Password?</a>
+      </div>
+
+      <!-- Create Account -->
+      <div class="text-center mt-6">
+        <p class="text-sm text-gray-600">
+          Don’t have an account?
+          <a href="/register/" class="font-medium text-black hover:underline">Register</a>
+        </p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function getCSRFToken() {
+      let cookieValue = null;
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith('csrftoken=')) {
+          cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
+          break;
+        }
+      }
+      return cookieValue;
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const username = this.username.value;
+      const password = this.password.value;
+      const msgEl = document.getElementById('login-message');
+
+      msgEl.textContent = "Logging in...";
+      msgEl.className = "text-center text-sm h-5 mt-2 text-gray-600";
+
+      try {
+        const res = await fetch('/api/v1/token/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('access_token', data.access);
+          localStorage.setItem('refresh_token', data.refresh);
+
+          msgEl.textContent = "✓ Login successful! Redirecting...";
+          msgEl.className = "text-center text-sm h-5 mt-2 text-green-600";
+
+          setTimeout(() => {
+            window.location.href = "/dashboard/";
+          }, 1500);
+        } else {
+          const errorData = await res.json();
+          msgEl.textContent = errorData.detail || "Invalid credentials";
+          msgEl.className = "text-center text-sm h-5 mt-2 text-red-600";
+        }
+      } catch (err) {
+        msgEl.textContent = "Network error. Please try again.";
+        msgEl.className = "text-center text-sm h-5 mt-2 text-red-600";
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -15,7 +15,16 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'theme' / 'static',  # ✅ This enables /static/css/dist/styles.css
+]
+
 
 import os
 
@@ -49,8 +58,18 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework_simplejwt',  # JWT authentication
+    'tailwind',
+    'theme',  # Tailwind theme app
+    
     
 ]
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -139,4 +158,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'

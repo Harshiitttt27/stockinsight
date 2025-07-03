@@ -1,0 +1,37 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}My App{% endblock %}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% tailwind_css %}
+
+  <!-- Optional: Add a nice font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gray-100 flex flex-col">
+  <!-- Centered content wrapper -->
+  <main class="flex-grow flex items-center justify-center px-4">
+    {% block content %}
+    <!-- Default fallback content -->
+    <div class="bg-white rounded-xl shadow-xl p-8 text-center max-w-md w-full">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">Django + Tailwind</h1>
+      <p class="text-gray-600">Build beautiful interfaces with ease 💙</p>
+    </div>
+    {% endblock %}
+  </main>
+
+  <!-- Optional Footer -->
+  <footer class="text-center text-gray-500 text-sm py-4">
+    &copy; {{ now|date:"Y" }} My App. All rights reserved.
+  </footer>
+</body>
+</html>
