@@ -69,6 +69,12 @@ INTERNAL_IPS = [
 ]
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
+from decouple import config
+
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = config("STRIPE_PUBLIC_KEY")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET")
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,6 +84,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.QuotaMiddleware',
+
 
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
