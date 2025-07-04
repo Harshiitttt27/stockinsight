@@ -17,3 +17,11 @@ class Prediction(models.Model):
 
     def __str__(self):
         return f"{self.ticker} - {self.user.username} - {self.created_at.date()}"
+
+
+class TelegramUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    chat_id = models.BigIntegerField(unique=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.chat_id}"

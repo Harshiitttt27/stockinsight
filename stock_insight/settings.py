@@ -22,11 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'theme' / 'static',  # ✅ This enables /static/css/dist/styles.css
+    BASE_DIR / 'theme' / 'static',  
 ]
 
 
-import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
