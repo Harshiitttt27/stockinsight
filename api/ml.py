@@ -2,6 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 import yfinance as yf
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend suitable for scripts
+
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import load_model

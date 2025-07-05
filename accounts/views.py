@@ -3,6 +3,17 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegistrationSerializer
 # Create your views here.
+import stripe
+from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+
+
+
+from django.shortcuts import render
 
 class RegisterView(APIView):
     def post(self, request):
@@ -13,21 +24,14 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-import stripe
-from django.conf import settings
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_checkout_session(request):
-    YOUR_DOMAIN = "http://localhost:8000"
+    YOUR_DOMAIN = "http://127.0.0.1:8000/api/v1" # Change this to your actual domain
     session = stripe.checkout.Session.create(
         customer_email=request.user.email,
         line_items=[{
@@ -79,10 +83,6 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_pro_status(request):
@@ -98,8 +98,8 @@ def check_pro_status(request):
         'is_pro': profile.is_pro
     })
 
-from django.shortcuts import render
 
+### Success and Cancel Pages
 def success_page(request):
     return render(request, 'accounts/success.html')
 

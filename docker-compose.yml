@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: stock_insight_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn stock_insight.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8000/healthz/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  telegrambot:
+    build: .
+    container_name: telegram_bot
+    command: >
+      sh -c "sleep 5 && python manage.py telegrambot"
+    depends_on:
+      - api
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+
+  predict:
+    build: .
+    container_name: stock_predictor
+    command: >
+      sh -c "sleep 10 && python manage.py predict --all"
+    depends_on:
+      - api
+    env_file:
+      - .env
+    volumes:
+      - .:/app

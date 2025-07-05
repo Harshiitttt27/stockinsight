@@ -10,7 +10,7 @@ from django.conf import settings
 
 def dashboard_view(request):
     context = {
-        'MEDIA_URL': settings.MEDIA_URL,  # <-- add this line
+        'MEDIA_URL': settings.MEDIA_URL, 
     }
 
     if request.method == "POST":
